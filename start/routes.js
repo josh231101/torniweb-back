@@ -20,12 +20,13 @@ const Route = use('Route')
  * LOGIN ROUTES
  */
 Route.post('login', 'UserController.login')
+Route.post('logout', 'UserController.logout')
 
 
 // CLIENT
 Route.group(() => {
 
-}).prefix('api/v1/client')
+}).prefix('api/client')
 
 
 
@@ -42,5 +43,5 @@ Route.group(() => {
   })
   Route.get('me', 'UserController.me')
 })
-  .prefix('api/v1/admin')
+  .prefix('api/admin')
   .middleware(['auth'])
