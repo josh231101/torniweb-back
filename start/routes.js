@@ -19,8 +19,8 @@ const Route = use('Route')
 /**
  * LOGIN ROUTES
  */
-Route.post('login', 'UserController.login')
-Route.post('logout', 'UserController.logout')
+Route.post('login', 'TokenController.login')
+Route.post('logout', 'TokenController.logout')
 
 
 // CLIENT
@@ -32,16 +32,12 @@ Route.group(() => {
 
 // CMS - ADMIN
 Route.group(() => {
-  Route.post('users', 'UserController.store')
-  Route.get('/getCatalogo', () => {
-    return { greeting: 'Hello world in JSON' }
-  })
-  Route.post('/submitOrder', () => {
-    // TODO ESTO LO VA A CORRER
-    console.log('submitOrder')
-    return { success: 'GUARDADO!!!' }
-  })
+  // GET
   Route.get('me', 'UserController.me')
+  Route.resource('countries', 'CountryController')
+  Route.resource('users', 'UserController')
+    .apiOnly()
+
 })
   .prefix('api/admin')
   .middleware(['auth'])

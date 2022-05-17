@@ -9,6 +9,8 @@ const Hash = use('Hash')
 class User extends Model {
   static boot () {
     super.boot()
+    this.addTrait('SoftDelete')
+    this.addTrait('DomainObject')
 
     /**
      * A hook to hash the user password before saving
@@ -36,6 +38,10 @@ class User extends Model {
    */
   tokens () {
     return this.hasMany('App/Models/Token')
+  }
+
+  country(){
+    return this.hasOne('App/Models/Country')
   }
 }
 

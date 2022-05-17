@@ -15,6 +15,7 @@ class UserSchema extends Schema {
       table.date('birth_date')
       table.string('phone', 254)
       table.timestamps()
+      table.dateTime('deleted_at')
     })
   }
 
