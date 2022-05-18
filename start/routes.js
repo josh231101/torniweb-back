@@ -25,6 +25,9 @@ Route.post('logout', 'TokenController.logout')
 
 // CLIENT
 Route.group(() => {
+  Route.get('products','ProductController.index')
+  Route.get('products/active','ProductController.active')
+  Route.post('orders','OrderController.store')
 
 }).prefix('api/client')
 
@@ -35,7 +38,17 @@ Route.group(() => {
   // GET
   Route.get('me', 'UserController.me')
   Route.resource('countries', 'CountryController')
+    .apiOnly()
   Route.resource('users', 'UserController')
+    .apiOnly()
+
+  Route.resource('products', 'ProductController')
+    .apiOnly()
+
+    Route.resource('orders', 'OrderController')
+    .apiOnly()
+
+  Route.resource('file', 'FileController')
     .apiOnly()
 
 })
