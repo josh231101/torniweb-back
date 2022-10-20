@@ -5,7 +5,7 @@ const Logger = use('Logger')
 class UserController {
   async index({ request, response}) {
     try{
-      const users = await User.all()
+      const users = await User.with('country').fetch()
       return response.status(200).json(users)
     } catch(err) {
       Logger.info('Error gettings all users')
@@ -21,7 +21,18 @@ class UserController {
   async store({ request, response }) {
     try {
       const data = request.all()
-      // TODO: Add sanitizer an validations :)
+      if(!data.user) {
+        return response.status(400).json({
+          code : 4000,
+          message: "Incorrect information provided to EP",
+        })
+      }
+      if(!data.user.password && !data.user.email) {
+        return response.status(400).json({
+          code : 4000,
+          message: "Missing password and email",
+        })
+      }
       const user = await User.create(data.user)
 
       return response.json({

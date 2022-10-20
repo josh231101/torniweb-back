@@ -14,6 +14,7 @@ class TokenController {
         message: "Bienvenido al sistema",
       })
     } catch (err) {
+      console.log('Error', err)
       Logger.info(err.message)
       Logger.info('Error in your request')
       return response.status(400).json({

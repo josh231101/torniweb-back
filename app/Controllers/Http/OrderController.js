@@ -11,7 +11,7 @@
 const Order = use('App/Models/Order')
 const OrderProduct = use('App/Models/OrderProduct')
 const Logger = use('Logger')
-
+const ObjectId = require('mongodb').ObjectId
 class OrderController {
   /**
    * Show a list of all orders.
@@ -24,7 +24,11 @@ class OrderController {
    */
   async index({ request, response, view }) {
     try {
-      const orderProducts = await Order.query().with('products').fetch()
+      // const prueba = await OrderProduct.with('products').with('order').fetch()
+      // console.log('prueba', prueba.toJSON())
+      const orderProducts = await Order
+      .with('products')
+      .fetch()
       return response.status(200).send(orderProducts)
     } catch (error) {
       Logger.info(`Error fetching product orders ${error.message}`)
@@ -56,9 +60,23 @@ class OrderController {
     try {
       const data = request.all()
       const cotizationCode = Math.random().toString(36).substring(2, 15)
+      if(!data.products) {
+        response.status(400).json({
+          code: 4000,
+          message: 'Missing products in cotization'
+        })
+      }
+      if(!data.products.length) {
+        response.status(400).json({
+          code: 4000,
+          message: 'Minimum 1 product in cotization is needed'
+        })
+      }
       const newOrder = {
         ...data.order,
-        order_code: cotizationCode
+        order_code: cotizationCode,
+        order_status: 'open',
+        products: data.products.map(product => product._id)
       }
       if (!data.products.length) {
         throw new Error('No products on cart')
@@ -66,8 +84,8 @@ class OrderController {
       const order = await Order.create(newOrder)
       const userProducts = data.products.map(product => ({
         quantity: product.quantity,
-        product_id: product.id,
-        order_id: order.id
+        product_id: new ObjectId(product._id),
+        order_id: order._id
       }))
       await OrderProduct.createMany(userProducts)
       return response.status(200).json(order)

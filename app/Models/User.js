@@ -41,7 +41,7 @@ class User extends Model {
   }
 
   country(){
-    return this.hasOne('App/Models/Country')
+    return this.hasOne('App/Models/Country','country_id','id')
   }
 }
 

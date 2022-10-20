@@ -40,7 +40,11 @@ class ProductController {
 
   async active ({ request, response, view }) {
     try{
-      const products = await Product.query().where('is_active',1).fetch()
+      const products = await Product
+      .query()
+      .where('is_active',true)
+      // .orWhere('is_active',true)
+      .fetch()
       return response.status(200).json(products)
     }catch(err){
       Logger.info('Error listing products...')
@@ -78,14 +82,16 @@ class ProductController {
 
       const data = request.only(['name', 'code', 'price', 'is_active'])
       const file = request.only('icon_image') // inBase64
-
+      let fileName = null
       data.price = Number.parseFloat(data.price)
-      data['is_active'] = data['is_active'] ? 1 : 0
-      const fileBase64Array = file.icon_image.split(';base64,')
-      const fileBase64 = fileBase64Array[1]
-      const extention = fileBase64Array[0].substring(11)
-      const fileName = await FileController.storeBase64({ file : fileBase64, extention  })
-      const newProduct = await Product.create({...data, icon_image: fileName})
+      data['is_active'] = data['is_active'] ? true : false
+      if(file && file.icon_imaget) {
+        const fileBase64Array = file.icon_image.split(';base64,')
+        const fileBase64 = fileBase64Array[1]
+        const extention = fileBase64Array[0].substring(11)
+        fileName = await FileController.storeBase64({ file : fileBase64, extention  })
+      }
+      const newProduct = await Product.create({...data, icon_image: fileName })
       return response.status(200).json(newProduct)
     }catch(err){
       console.log('err.', err.message)
@@ -96,7 +102,6 @@ class ProductController {
         message: 'Backend error creating product'
       })
     }
-
   }
 
   /**
@@ -144,6 +149,36 @@ class ProductController {
    */
   async destroy ({ params, request, response }) {
   }
+  /**
+   * Inactivate a product with id.
+   * DELETE products/deactivate/:id
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async deactivate ({ params, request, response }) {
+    const { id } = request.params
+    await Product.query().where('_id', id)
+      .update({ is_active: false })
+
+  }
+  /**
+   * Activate a product with id.
+   * DELETE products/activate/:id
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async activate ({ params, request, response }) {
+    const { id } = request.params
+    await Product.query().where('_id', id)
+      .update({ is_active: true })
+
+  }
+
+
 }
 
 module.exports = ProductController

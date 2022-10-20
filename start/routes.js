@@ -29,6 +29,8 @@ Route.group(() => {
   Route.get('products/active','ProductController.active')
   Route.post('orders','OrderController.store')
 
+  Route.post('attemptSignIn/:tokenId', 'OAuthController.attemptSignIn')
+
 }).prefix('api/client')
 
 
@@ -44,6 +46,9 @@ Route.group(() => {
 
   Route.resource('products', 'ProductController')
     .apiOnly()
+
+  Route.post('products/deactivate/:id','ProductController.deactivate')
+  Route.post('products/activate/:id','ProductController.activate')
 
     Route.resource('orders', 'OrderController')
     .apiOnly()
